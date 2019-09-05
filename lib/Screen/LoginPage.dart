@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'mainscreen.dart';
 
 
@@ -12,6 +12,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  TextEditingController email = new TextEditingController();
+  TextEditingController pass = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,28 +63,20 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                               labelText: 'Enter Mail'
                           ),
-                          validator: (input){
-                            if(input.isEmpty){
-                              return 'Please type an email';
-                            }
-                          },
+                          controller: email,
                           keyboardType: TextInputType.emailAddress,
                         ),
                         TextFormField(
                           decoration: InputDecoration(
                               labelText: 'Enter Password'
                           ),
-                          validator: (input){
-                            if(input.length < 6){
-                              return 'Your password needs to be atleast 6 characters';
-                            }
-                          },
+                          controller: pass,
                           keyboardType: TextInputType.text,
                           obscureText: true,
                         ),
                         Padding(padding: EdgeInsets.all(20.0)),
                         MaterialButton(
-                          onPressed: () {},
+                          onPressed: () {SignIn();},
                           color: Colors.teal,
                           textColor: Colors.white,
                           child: Text(
@@ -99,6 +95,17 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void SignIn() async{
+    FirebaseUser user;
+    try{
+      user = (await _auth.signInWithEmailAndPassword(email: email.text, password: pass.text)) as FirebaseUser;
+    }
+    catch(e){
+      print(e.toString());
+    }
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => MainScreen() ));
+
+  }
 
 
 }
